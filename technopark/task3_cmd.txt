@@ -1,0 +1,31 @@
+mapred streaming \
+-D mapred.reduce.tasks=1 \
+-input /user/$USER/data/data3/rosstat/pr* \
+-output /user/$USER/data/output3/prepared_data/without_city \
+-mapper task3_price_product_stat_mapper.py \
+-reducer task3_product_join_reducer.py \
+-file /home/$USER/task3_price_product_stat_mapper.py \
+-file /home/$USER/task3_product_join_reducer.py
+
+
+mapred streaming \
+-D mapred.reduce.tasks=0 \
+-input /user/$USER/data/data3/rosstat/city.csv \
+-output /user/$USER/data/output3/prepared_data/city \
+-mapper task3_city_mapper.py \
+-file /home/$USER/task3_city_mapper.py
+
+
+mapred streaming \
+-D mapred.reduce.tasks=2 \
+-input /user/$USER/data/output3/prepared_data/* \
+-output /user/$USER/data/output3/result \
+-mapper task3_final_mapper.py \
+-reducer task3_final_reducer.py \
+-file /home/$USER/task3_final_mapper.py \
+-file /home/$USER/task3_final_reducer.py
+
+
+hdfs dfs -cat /user/alubyanov/data/output3/prepared_data/without_city/*
+hdfs dfs -cat /user/alubyanov/data/output3/prepared_data/city/*
+hdfs dfs -cat /user/alubyanov/data/output3/result/*
